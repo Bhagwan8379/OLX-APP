@@ -135,7 +135,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
         name, mobile, email, password, confirm
     })
     if (isError) { return res.status(400).json({ message: "All Fields Required", error }) }
-    if (!validator.isEmail("email")) { return res.json({ message: "Invalid Email" }) }
+    if (!validator.isEmail("email")) { return res.status(400).json({ message: "Invalid Email" }) }
     if (!validator.isMobilePhone(mobile, "en-IN")) { return res.status(400).json({ message: "Invalid Mobile" }) }
     if (!validator.isStrongPassword(password)) { return res.status(400).json({ message: "Provide storng Password" }) }
     if (!validator.isStrongPassword(confirm)) { return res.status(400).json({ message: "Provide storng Password" }) }
@@ -143,7 +143,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
 
     const result = await User.findOne({ email })
     if (result) {
-        res.status(400).json({ message: "Email Already Registered" })
+        return res.status(400).json({ message: "Email Already Registered" })
     }
 
     const hash = await bcrypt.hash(password, 10)
