@@ -20,6 +20,7 @@ const { checkEmpty } = require("../utils/checkEmpty")
 const Admin = require("../models/Admin")
 const { verify } = require("jsonwebtoken")
 const sendEmail = require("../utils/email")
+const User = require("../models/User")
 
 exports.registerAdmin = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body
@@ -125,4 +126,49 @@ exports.logoutAdmin = asyncHandler((req, res) => {
     res.json({ message: "AdminLogOut Success" })
 
 
+})
+
+
+exports.registerUser = asyncHandler(async (req, res) => {
+    const { name, email, mobile, password, confirm } = req.body
+    const { error, isError } = checkEmpty({
+        name, mobile, email, password, confirm
+    })
+    if (isError) { return res.status(400).json({ message: "All Fields Required", error }) }
+    if (!validator.isEmail("email")) { return res.json({ message: "Invalid Email" }) }
+    if (!validator.isMobilePhone(mobile, "en-IN")) { return res.status(400).json({ message: "Invalid Mobile" }) }
+    if (!validator.isStrongPassword(password)) { return res.status(400).json({ message: "Provide storng Password" }) }
+    if (!validator.isStrongPassword(confirm)) { return res.status(400).json({ message: "Provide storng Password" }) }
+    if (password !== confirm) { return res.status(400).json({ message: "Password Do Not Match" }) }
+
+    const hash = await bcrypt.hash(password, 10)
+    await User.create({ name, mobile, email, password: hash })
+    res.json({ message: "User Register Success" })
+})
+
+exports.loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body
+    const { error, isError } = checkEmpty({ email, password, })
+    if (isError) { return res.status(400).json({ message: "All Fields Required", error }) }
+    const result = await User.findOne({ email })
+    if (!result) {
+        return res.status(401).json({ message: "Email Not Found" })
+    }
+    const verify = await bcrypt.compare(password, result.password)
+    if (!verify) {
+        return res.status(401).json({ message: "Password Do Not Match" })
+    }
+    const token = JWT.sign({ userId: result._id }, process.env.JWT_KEY, { expiresIn: "180d" })
+    res.cookie("user", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 1000 * 60 * 60 * 24 * 180
+    })
+    res.json({ message: "User Login Success" })
+
+})
+
+exports.logoutUser = asyncHandler((req, res) => {
+    res.clearCookie("User")
+    res.json({ message: "user Logout Success" })
 })
