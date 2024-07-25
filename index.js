@@ -8,9 +8,10 @@ const app = express()
 app.use(express.json())
 app.use(express.static("dist"))
 app.use(cors({
-    origin: process.env.NODE_ENV === "developement"
-        ? "http://localhost:5173"
-        : process.env.LIVE_SERVER,
+    // origin: process.env.NODE_ENV === "developement"
+    //     ? "http://localhost:5173"
+    //     : process.env.LIVE_SERVER,
+    origin: true,
     credentials: true
 }))
 app.use("/api/auth", require("./routes/auth.routes"))
