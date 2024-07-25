@@ -141,6 +141,11 @@ exports.registerUser = asyncHandler(async (req, res) => {
     if (!validator.isStrongPassword(confirm)) { return res.status(400).json({ message: "Provide storng Password" }) }
     if (password !== confirm) { return res.status(400).json({ message: "Password Do Not Match" }) }
 
+    const result = await User.findOne({ email })
+    if (result) {
+        res.status(400).json({ message: "Email Already Registered" })
+    }
+
     const hash = await bcrypt.hash(password, 10)
     await User.create({ name, mobile, email, password: hash })
     res.json({ message: "User Register Success" })
