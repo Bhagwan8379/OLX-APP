@@ -13,6 +13,7 @@ router
     .post("/register-mobile-user", authController.registerUser)
     .post("/logout-mobile-user", authController.logoutUser)
     .post("verify-mobile-otp", authController.verifyOTP)
+// .post("change-mobile-password", authController.)
 
 
 
