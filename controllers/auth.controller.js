@@ -169,7 +169,16 @@ exports.loginUser = asyncHandler(async (req, res) => {
         secure: process.env.NODE_ENV === "production",
         maxAge: 1000 * 60 * 60 * 24 * 180
     })
-    res.json({ message: "User Login Success", result })
+    res.json({
+        message: "User Login Success", result: {
+            _id: result._id,
+            name: result.name,
+            email: result.email,
+            mobile: result.mobile,
+            avatar: result.avatar,
+            verify: result.verify,
+        }
+    })
 
 })
 
