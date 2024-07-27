@@ -104,7 +104,7 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
     //JWT
     res.cookie("admin", token,
         {
-            maxAge: 86400000,
+            maxAge: 1000 * 60 * 60 * 24 * 180,
             httpOnly: true,
             secure: process.env.NODE_ENV === "production"
 
@@ -115,7 +115,12 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
         message: "OTP Verify Success", result: {
             _id: result._id,
             name: result.name,
-            email: result.email
+            email: result.email,
+            mobile: result.mobile,
+            avatar: result.avatar,
+            mobileVerified: result.mobileVerified,
+            emailVerified: result.emailVerified
+
         }
     })
 })
