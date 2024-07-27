@@ -1,5 +1,4 @@
 const router = require("express").Router()
-const { verifyUserEmail } = require("../controllers/user.controller")
 const { userProtected } = require("../middleware/protected")
 
 router
